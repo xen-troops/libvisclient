@@ -24,11 +24,13 @@ namespace epam {
 
 VisClient::VisClient()
 {
+    ALOGI("Created vis client with uri=%s", mUri.c_str());
 }
 
 void VisClient::setUri(const std::string& uri) {
     std::lock_guard<std::mutex> lock(mLock);
     mUri = uri;
+    ALOGI("Vis uri changed to %s", mUri.c_str());
 }
 
 void VisClient::start() {
@@ -116,7 +118,7 @@ int VisClient::doInit() {
     mProtocolErrorCount = 0;
     mConnectedState = ConnState::STATE_CONNECTING;
 
-    ALOGD("Will try to connect to VIS uri[%s]", mUri.c_str());
+    ALOGV("Will try to connect to VIS uri[%s]", mUri.c_str());
     mHub.connect(mUri.c_str(), reinterpret_cast<void*>(CONNECTION_MODE_SSL));
     ALOGV("doInit end");
     return 0;
@@ -130,6 +132,7 @@ int VisClient::init() {
         char propValue[PROPERTY_VALUE_MAX] = {};
         property_get("persist.vis.uri", propValue, kDefaultVisUri);
         mUri = propValue;
+        ALOGI("Vis uri changed to %s", mUri.c_str());
     }
 
     std::function<void(void*)> errorHandler =
@@ -372,11 +375,11 @@ void VisClient::handleError(void* user) {
     ALOGV("handleError");
     switch (reinterpret_cast<size_t>(user)) {
         case CONNECTION_MODE_NON_SSL:
-            ALOGE("Client emitted error in non SSL MODE...");
+            ALOGV("Client emitted error in non SSL MODE...");
             usleep(kSleepTimeAfterErrorUs);
             break;
         case CONNECTION_MODE_SSL:
-            ALOGE("Client emitted error in SSL MODE...");
+            ALOGV("Client emitted error in SSL MODE...");
             usleep(kSleepTimeAfterErrorUs);
             break;
         default:
