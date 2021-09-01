@@ -207,9 +207,9 @@ void testSet() {
         sleep(1);
     }
     std::future<WMessageResult> f;
-    std::string str("\"XXXX\":10");
+    std::string str("XXXX");
     ALOGI("Will try to set %s ....", str.c_str());
-    Status st = mVis.setProperty(str, f);
+    Status st = mVis.setProperty(str, "10", f);
     ALOGI("SET retrned OK = %d", st == Status::OK);
     f.wait();
     WMessageResult sr = f.get();
@@ -228,8 +228,8 @@ void testSetSync() {
     while (mVis.getConnectedState() != ConnState::STATE_CONNECTED) {
         sleep(1);
     }
-    std::string str("\"Test.Vehicle.hvac.fan_speed\":12");
-    Status st = mVis.setPropertySync(str);
+    std::string str("Test.Vehicle.hvac.fan_speed");
+    Status st = mVis.setPropertySync(str, "12");
     ALOGI("SET retrned OK = %d", st == Status::OK);
     sleep(3);
     mVis.stop();
@@ -276,8 +276,8 @@ void testSetGetSync() {
 
     {
         std::stringstream ss;
-        ss << "\"" << sFunSpeed << "\":" << funSpeed;
-        Status st = mVis.setPropertySync(ss.str());
+        ss << funSpeed;
+        Status st = mVis.setPropertySync(sFunSpeed, ss.str());
         if (st != Status::OK) {
             ALOGE("Set fail");
             mVis.stop();
